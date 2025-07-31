@@ -11,6 +11,7 @@ supplier_df = read_file("data/Supplier.csv")
 
 print(supplier_df)
 
+
 transaction_process = TransactionProcessor(df)
 transaction_process.calculate_total_amount()
 transaction_process.group_by_country()

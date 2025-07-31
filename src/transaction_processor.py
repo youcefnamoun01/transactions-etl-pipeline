@@ -52,7 +52,29 @@ class TransactionProcessor:
         df["InvoiceNo"] = df["InvoiceNo"].astype(str)
         supplier_df["InvoiceNo"] = supplier_df["InvoiceNo"].astype(str)
         df = df.merge(supplier_df, on="InvoiceNo", how="left")
-        print(df)
+        global_rank = df.groupby("Fournisseur")["TotalAmount"].sum().sort_values(ascending=False)
+        uk_2011 = df[(df["Country"] == "United Kingdom") & (df["InvoiceDate"].dt.year == 2011)]
+        uk_rank = uk_2011.groupby("Fournisseur")["TotalAmount"].sum().sort_values(ascending=False)
+        print(uk_rank)
+        return global_rank, uk_rank
 
     def aggregate_world_data(self):
-        pass
+        df = self.df.copy().head(10)
+
+        df["Continent"] = df["Country"].apply(get_continent_from_country)
+
+        total_by_continent = (
+            df.groupby("Continent")["TotalAmount"]
+            .sum()
+            .sort_values(ascending=False)
+        )
+        logging.info("Classement des continents selon les dépenses effectué.")
+
+        df["IsCancelled"] = df["InvoiceNo"].astype(str).str.startswith("C")
+        cancel_by_continent = (
+            df[df["IsCancelled"]].groupby("Continent")["InvoiceNo"]
+            .count()
+            .sort_values(ascending=False)
+        )
+        logging.info("Classement des continents par nombre d'annulations effectué.")
+        return total_by_continent, cancel_by_continent
