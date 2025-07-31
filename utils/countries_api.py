@@ -20,13 +20,11 @@ def get_continent_from_country(country_name):
     try:
         res = requests.get(f"https://restcountries.com/v3.1/name/{country_name}", timeout=5)
         if res.status_code == 200:
-            print("call_api_1")
             data = res.json()[0]
             continent = data["region"]
             continent_cache[country_name] = continent
             return continent
         else:
-            print("call_api_2")
             corrected_name = fallback_mapping.get(country_name)
             if corrected_name:
                 if corrected_name in continent_cache:

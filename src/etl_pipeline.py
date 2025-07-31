@@ -4,6 +4,7 @@ from src.transaction_processor import TransactionProcessor
 from utils.functions import read_file
 from utils.aws_s3_connect import upload_to_s3_as_parquet
 from io import BytesIO
+import time
 
 class ETLPipeline:
     def __init__(self, df, supplier_df):
@@ -11,6 +12,7 @@ class ETLPipeline:
         self.supplier_df = supplier_df
 
     def run_pipeline(self):
+        start_time = time.time()
         logging.info("--------Lancement du pipeline ETL--------")
         """
         logging.info("Nettoyage des données...")
@@ -32,6 +34,10 @@ class ETLPipeline:
         processor.aggregate_supplier_data(self.supplier_df)
         processor.aggregate_world_data()
         self.df = processor.df
+        
+        end_time = time.time()  # Fin du timer
+        elapsed_time = end_time - start_time
+        logging.info(f"Pipeline ETL exécuté en {elapsed_time:.2f} secondes.")
 
     def save_as_parquet(self, bucket_name: str, s3_key: str):
         self.df["StockCode"] = self.df["StockCode"].astype(str)

@@ -20,10 +20,10 @@ print(df_suppliers)
 """
 
 bucket = "projet-data-storage"
-df = read_file("data/Online_Retail_silver.xlsx")
+df = read_file("data/Online_Retail_bronze.xlsx")
 suppliers = read_file("data/Supplier.csv")
 
 pipeline = ETLPipeline(df, suppliers)
 pipeline.run_pipeline()
-pipeline.save_as_parquet(bucket, "Online_Retail_gold.parquet")
+pipeline.save_as_parquet(bucket, "Online_Retail_gold")
 

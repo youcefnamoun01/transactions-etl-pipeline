@@ -1,6 +1,7 @@
 import boto3
 import pandas as pd
 from io import BytesIO
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 import logging
@@ -43,12 +44,18 @@ def upload_to_s3(df, bucket_name, s3_key):
         print(f"Erreur lors de l'upload : {str(e)}")
 
 
-def upload_to_s3_as_parquet(df, bucket_name: str, s3_key: str):
+def upload_to_s3_as_parquet(df, bucket_name: str, prefix: str):
     try:
+        df["date"] = pd.to_datetime(df["InvoiceDate"]).dt.date
+        today_str = datetime.today().strftime("%Y-%m-%d")
+        partition_path = f"date={today_str}"
+        filename = "Online_Retail_gold.parquet"
+        s3_key = f"{prefix}/{partition_path}/{filename}"
         buffer = BytesIO()
         df.to_parquet(buffer, index=False, engine="pyarrow")
         buffer.seek(0)
         s3.upload_fileobj(buffer, bucket_name, s3_key)
-        logging.info(f"Fichier Parquet sauvegardé : s3://{bucket_name}/{s3_key}")
+        logging.info(f"Parquet sauvegardé avec partition date : s3://{bucket_name}/{s3_key}")
+
     except Exception as e:
-        logging.error(f"Erreur lors de la sauvegarde Parquet : {str(e)}")
+        logging.error(f"Erreur upload parquet partitionné : {str(e)}")

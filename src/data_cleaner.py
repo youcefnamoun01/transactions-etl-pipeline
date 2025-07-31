@@ -1,8 +1,8 @@
 import logging
 from utils.aws_s3_connect import upload_to_s3
+import os
 
-
-bucket = "projet-data-storage"
+bucket = os.getenv("BUCKET_NAME")
 
 class DataCleaner:
     def __init__(self, df):
