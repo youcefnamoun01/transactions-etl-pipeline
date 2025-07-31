@@ -2,6 +2,7 @@ import logging
 from src.data_cleaner import DataCleaner
 from src.transaction_processor import TransactionProcessor
 from utils.functions import read_file
+from utils.aws_s3_connect import upload_to_s3_as_parquet
 from io import BytesIO
 
 class ETLPipeline:
@@ -33,12 +34,6 @@ class ETLPipeline:
         self.df = processor.df
 
     def save_as_parquet(self, bucket_name: str, s3_key: str):
-        try:
-            buffer = BytesIO()
-            self.df.to_parquet(buffer, index=False, engine="pyarrow")
-            buffer.seek(0)
-            s3.upload_fileobj(buffer, bucket_name, s3_key)
-            logging.info(f"Fichier Parquet sauvegardé : s3://{bucket_name}/{s3_key}")
-        except Exception as e:
-            logging.error(f"Erreur lors de la sauvegarde Parquet : {str(e)}")
+        self.df["StockCode"] = self.df["StockCode"].astype(str)
+        upload_to_s3_as_parquet(self.df, bucket_name, s3_key)
 

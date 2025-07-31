@@ -3,6 +3,7 @@ import pandas as pd
 from io import BytesIO
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
 
@@ -39,24 +40,15 @@ def upload_to_s3(df, bucket_name, s3_key):
         s3.upload_fileobj(buffer, bucket_name, s3_key)
         print(f"Fichier uploadé : s3://{bucket_name}/{s3_key}")
     except Exception as e:
-        print(f"❌ Erreur lors de l'upload : {str(e)}")
+        print(f"Erreur lors de l'upload : {str(e)}")
 
 
-
-
-""""
-# Exemple d’utilisation :
-bucket = "projet-data-storage"
-csv_key = "Supplier.csv"
-excel_key = "Online_Retail_bronze.xlsx"
-
-upload_xlsx_to_s3("../data/Online_Retail_silver.xlsx", bucket, "Online_Retail_silver.xlsx")
-
-
-df_csv = load_csv_from_s3(bucket, csv_key)
-
-df_excel = load_excel_from_s3(bucket, excel_key)
-
-print(df_csv.head())
-print(df_excel.head())
-"""
+def upload_to_s3_as_parquet(df, bucket_name: str, s3_key: str):
+    try:
+        buffer = BytesIO()
+        df.to_parquet(buffer, index=False, engine="pyarrow")
+        buffer.seek(0)
+        s3.upload_fileobj(buffer, bucket_name, s3_key)
+        logging.info(f"Fichier Parquet sauvegardé : s3://{bucket_name}/{s3_key}")
+    except Exception as e:
+        logging.error(f"Erreur lors de la sauvegarde Parquet : {str(e)}")

@@ -20,7 +20,7 @@ print(df_suppliers)
 """
 
 bucket = "projet-data-storage"
-df = read_file("data/Online_Retail_bronze.xlsx")
+df = read_file("data/Online_Retail_silver.xlsx")
 suppliers = read_file("data/Supplier.csv")
 
 pipeline = ETLPipeline(df, suppliers)

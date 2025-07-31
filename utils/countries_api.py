@@ -10,7 +10,6 @@ fallback_mapping = {
 }
 
 def get_continent_from_country(country_name):
-    print(f"Looking up: {country_name}")
     if not country_name or country_name.strip() == "":
         return None
 
