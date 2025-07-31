@@ -1,6 +1,8 @@
 import logging
-from etl.data_cleaner import DataCleaner
-from etl.transaction_processor import TransactionProcessor
+from src.data_cleaner import DataCleaner
+from src.transaction_processor import TransactionProcessor
+from utils.functions import read_file
+from io import BytesIO
 
 class ETLPipeline:
     def __init__(self, df, supplier_df):
@@ -8,16 +10,19 @@ class ETLPipeline:
         self.supplier_df = supplier_df
 
     def run_pipeline(self):
-        logging.info("Lancement du pipeline ETL")
-
-        # Nettoyage
+        logging.info("--------Lancement du pipeline ETL--------")
+        """
+        logging.info("Nettoyage des données...")
         cleaner = DataCleaner(self.df)
         cleaner.remove_duplicates()
         cleaner.handle_missing_values()
         cleaner.filter_valid_transactions()
         clean_df = cleaner.get_clean_data()
+        logging.info(f"Dataframe aprés nettoyage {self.df}")
+        """
+        clean_df = read_file("data/Online_Retail_silver.xlsx")
 
-        # Traitement
+        logging.info("Traitement des données...")
         processor = TransactionProcessor(clean_df)
         processor.calculate_total_amount()
         processor.group_by_country()
@@ -25,8 +30,15 @@ class ETLPipeline:
         processor.calcul_stat_data()
         processor.aggregate_supplier_data(self.supplier_df)
         processor.aggregate_world_data()
-
         self.df = processor.df
 
-    def save_as_parquet(self, path: str):
-        pass
+    def save_as_parquet(self, bucket_name: str, s3_key: str):
+        try:
+            buffer = BytesIO()
+            self.df.to_parquet(buffer, index=False, engine="pyarrow")
+            buffer.seek(0)
+            s3.upload_fileobj(buffer, bucket_name, s3_key)
+            logging.info(f"Fichier Parquet sauvegardé : s3://{bucket_name}/{s3_key}")
+        except Exception as e:
+            logging.error(f"Erreur lors de la sauvegarde Parquet : {str(e)}")
+

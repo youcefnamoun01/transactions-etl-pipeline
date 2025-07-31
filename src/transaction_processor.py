@@ -56,11 +56,10 @@ class TransactionProcessor:
         global_rank = df.groupby("Fournisseur")["TotalAmount"].sum().sort_values(ascending=False)
         uk_2011 = df[(df["Country"] == "United Kingdom") & (df["InvoiceDate"].dt.year == 2011)]
         uk_rank = uk_2011.groupby("Fournisseur")["TotalAmount"].sum().sort_values(ascending=False)
-        print(uk_rank)
         return global_rank, uk_rank
 
     def aggregate_world_data(self):
-        df = self.df.copy().head(10)
+        df = self.df.copy()
 
         df["Continent"] = df["Country"].apply(get_continent_from_country)
         print(df)

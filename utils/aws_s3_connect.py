@@ -20,19 +20,27 @@ s3 = boto3.client(
 )
 
 def load_csv_from_s3(bucket_name, file_key):
+    logging.info("Chargement du fichier {file_key} depuis AWS S3")
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     return pd.read_csv(obj['Body'])
 
 def load_excel_from_s3(bucket_name, file_key):
+    logging.info("Chargement du fichier {file_key} depuis AWS S3")
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     return pd.read_excel(BytesIO(obj['Body'].read()), engine='openpyxl')
 
-def upload_xlsx_to_s3(file_path, bucket_name, s3_key):
+
+def upload_to_s3(df, bucket_name, s3_key):
     try:
-        s3.upload_file(file_path, bucket_name, s3_key)
-        print(f"✅ Fichier uploadé : s3://{bucket_name}/{s3_key}")
+        buffer = BytesIO()
+        df.to_excel(buffer, index=False, engine="openpyxl")
+        buffer.seek(0)
+        
+        s3.upload_fileobj(buffer, bucket_name, s3_key)
+        print(f"Fichier uploadé : s3://{bucket_name}/{s3_key}")
     except Exception as e:
         print(f"❌ Erreur lors de l'upload : {str(e)}")
+
 
 
 
