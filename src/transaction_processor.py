@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+from utils.countries_api import get_continent_from_country
 
 class TransactionProcessor:
     def __init__(self, df):
@@ -62,7 +63,7 @@ class TransactionProcessor:
         df = self.df.copy().head(10)
 
         df["Continent"] = df["Country"].apply(get_continent_from_country)
-
+        print(df)
         total_by_continent = (
             df.groupby("Continent")["TotalAmount"]
             .sum()
