@@ -14,7 +14,7 @@ class ETLPipeline:
     def run_pipeline(self):
         start_time = time.time()
         logging.info("--------Lancement du pipeline ETL--------")
-        """
+
         logging.info("Nettoyage des données...")
         cleaner = DataCleaner(self.df)
         cleaner.remove_duplicates()
@@ -22,8 +22,6 @@ class ETLPipeline:
         cleaner.filter_valid_transactions()
         clean_df = cleaner.get_clean_data()
         logging.info(f"Dataframe aprés nettoyage {self.df}")
-        """
-        clean_df = read_file("data/Online_Retail_silver.xlsx")
 
         logging.info("Traitement des données...")
         processor = TransactionProcessor(clean_df)
