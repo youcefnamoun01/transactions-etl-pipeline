@@ -19,7 +19,7 @@ class ETLPipeline:
         cleaner = DataCleaner(self.df)
         cleaner.remove_duplicates()
         cleaner.handle_missing_values()
-        # cleaner.filter_valid_transactions()
+        cleaner.filter_valid_transactions()
         clean_df = cleaner.get_clean_data()
         logging.info(f"Dataset aprés nettoyage \n {self.df}")
         
