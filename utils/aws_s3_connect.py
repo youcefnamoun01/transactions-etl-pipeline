@@ -13,7 +13,7 @@ aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY")
 region_name = os.getenv("AWS_REGION")
 
 
-# Configurer ton client S3 avec tes credentials AWS
+# Configuration credentials AWS
 s3 = boto3.client(
     "s3",
     aws_access_key_id=aws_access_key_id,
@@ -22,12 +22,12 @@ s3 = boto3.client(
 )
 
 def load_csv_from_s3(bucket_name, file_key):
-    logging.info("Chargement du fichier {file_key} depuis AWS S3")
+    logging.info(f"Chargement du fichier {file_key} depuis AWS S3")
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     return pd.read_csv(obj['Body'])
 
 def load_excel_from_s3(bucket_name, file_key):
-    logging.info("Chargement du fichier {file_key} depuis AWS S3")
+    logging.info(f"Chargement du fichier {file_key} depuis AWS S3")
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     return pd.read_excel(BytesIO(obj['Body'].read()), engine='openpyxl')
 
