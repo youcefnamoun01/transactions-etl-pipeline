@@ -10,5 +10,5 @@ RUN pip install --upgrade pip \
 # Copier tout le code de ton projet
 COPY . .
 
-# Spécifier le point d'entrée : fichier lambda_function.py + nom de la fonction handler
+# Spécifier le point d'entrée
 CMD ["lambda_function.lambda_handler"]

@@ -6,7 +6,7 @@ def read_file(path: str) -> pd.DataFrame:
     elif path.endswith(".csv"):
         return pd.read_csv(path)
     else:
-        raise ValueError("Format non supporté (seulement .csv et .xlsx)")
+        raise ValueError("Format non supporté")
 
 def write_file(df: pd.DataFrame, path: str) -> None:
     if path.endswith(".xlsx"):
@@ -14,4 +14,4 @@ def write_file(df: pd.DataFrame, path: str) -> None:
     elif path.endswith(".csv"):
         df.to_csv(path, index=False)
     else:
-        raise ValueError("Format non supporté (seulement .csv et .xlsx)")
+        raise ValueError("Format non supporté")

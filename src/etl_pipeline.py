@@ -14,17 +14,16 @@ class ETLPipeline:
     def run_pipeline(self):
         start_time = time.time()
         logging.info("--------Lancement du pipeline ETL--------")
-        
+
         logging.info("Etape 1: Nettoyage des données...")
         cleaner = DataCleaner(self.df)
         cleaner.remove_duplicates()
         cleaner.handle_missing_values()
-        cleaner.filter_valid_transactions()
+        # cleaner.filter_valid_transactions()
         clean_df = cleaner.get_clean_data()
-        logging.info(f"Dataframe aprés nettoyage {self.df}")
-
-        clean_df = read_file("data/Online_Retail_silver.xlsx")
-        logging.info("Etape 2 : Traitement des données...")
+        logging.info(f"Dataset aprés nettoyage \n {self.df}")
+        
+        logging.info("Etape 2: Traitement des données...")
         processor = TransactionProcessor(clean_df)
         processor.calculate_total_amount()
         processor.group_by_country()
@@ -33,6 +32,7 @@ class ETLPipeline:
         processor.aggregate_supplier_data(self.supplier_df)
         processor.aggregate_world_data()
         self.df = processor.df
+        logging.info(f"Dataset aprés traitement \n {self.df}")
         
         end_time = time.time()
         elapsed_time = end_time - start_time
