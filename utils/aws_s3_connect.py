@@ -21,17 +21,20 @@ s3 = boto3.client(
     region_name=region_name
 )
 
+# load csv file from aws s3 bucket
 def load_csv_from_s3(bucket_name, file_key):
     logging.info(f"Chargement du fichier {file_key} depuis AWS S3")
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     return pd.read_csv(obj['Body'])
 
+# load excel file from aws s3 bucket
 def load_excel_from_s3(bucket_name, file_key):
     logging.info(f"Chargement du fichier {file_key} depuis AWS S3")
     obj = s3.get_object(Bucket=bucket_name, Key=file_key)
     return pd.read_excel(BytesIO(obj['Body'].read()), engine='openpyxl')
 
 
+# upload dataframe to aws s3 bucket as format xlsx
 def upload_to_s3(df, bucket_name, s3_key):
     try:
         buffer = BytesIO()
@@ -43,7 +46,7 @@ def upload_to_s3(df, bucket_name, s3_key):
     except Exception as e:
         print(f"Erreur lors de l'upload : {str(e)}")
 
-
+# upload dataframe to aws s3 bucket as format parquet
 def upload_to_s3_as_parquet(df, bucket_name: str, prefix: str):
     try:
         df["date"] = pd.to_datetime(df["InvoiceDate"]).dt.date
